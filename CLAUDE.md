@@ -123,24 +123,27 @@ run against a real task.
 
 ## Build order
 
-Groups advance in sequence. **No group advances until the previous group's
-output has been exercised on a real project.**
+Groups define dependency order. Per C12 the exercise gate applies to the **set**,
+against the first real project that consumes it — not to each group in turn.
 
 ```
-G1  base → stack-nest → security-appsec (draft) → Backend agent → real test
+G1  base → stack-nest → security-appsec → Backend agent
 G2  stack-react → stack-react-web → Frontend agent
-G3  stack-react-native → Mobile agent
+G3  stack-react-native → Mobile agent          — not built: no consumer
 G4  error-handling-and-logging → testing
-G5  auth library → auth-lib skill; logging library → logging-lib skill
+G5  auth-lib; logging-lib                      — not built: libraries do not exist
 G6  Testing agent → Infra agent → Code Reviewer agent
 G7  Requirements Analyst (independent; no ordering constraint)
+    stack-prisma, stack-aws                    — added outside the original order
 ```
 
-`auth-lib` and `logging-lib` stay empty until the libraries they document
-exist. Do not speculate about their contents.
+A group with no consumer is not built. `stack-react-native` and the Mobile agent
+wait for a React Native project; `auth-lib` and `logging-lib` wait for the
+libraries they document. Do not speculate about their contents.
 
-Do not build ahead of the sequence, and do not design a skill to theoretical
-completeness in the abstract. Minimum viable content, exercised, then iterated.
+Everything written before the first real exercise is a **draft** by C8. Do not
+design a skill to theoretical completeness in the abstract: minimum viable
+content, then corrected from what actually fails on a real project.
 
 ## Working method
 

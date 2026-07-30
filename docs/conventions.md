@@ -213,7 +213,8 @@ step does not happen once the set looks complete.
 empty placeholders invite filling them. Skills documenting libraries that do
 not exist yet stay unwritten rather than speculative.
 
-Status: locked, 2026-07-29.
+Status: locked, 2026-07-29. Amended by C12: the exercise gate applies to the set
+against its first real project, not to each group in turn.
 
 ---
 
@@ -264,6 +265,40 @@ The `.template` suffix keeps it inert.
 context; they receive it. The built-in Explore and Plan agents are the exception
 — they skip the CLAUDE.md hierarchy by design, so work that depends on project
 context should not be delegated to them.
+
+Status: locked, 2026-07-29.
+
+---
+
+## C12 — The exercise gate applies to the set, not to each group
+
+**Decision.** The build order defines dependency order, not a checkpoint per
+group. Artifacts may be written before being exercised; the requirement to
+exercise them applies to the set as a whole, against the first real project that
+consumes it. Amends C9.
+
+**Why.** C9 as written required a real project per group, but the projects that
+would exercise these artifacts cannot be built without them. That is a deadlock,
+and the practical effect was that nothing advanced. What C9 actually protects is
+that rules get corrected from evidence rather than from speculation, and that
+survives: the whole set is built, then used on one real project, then corrected
+from what actually failed.
+
+**Rejected.** Waiting for a separate real project per group. It is the stricter
+reading and it stalls indefinitely.
+
+**Rejected.** Dropping the exercise requirement. Artifacts still stay `draft`
+until exercised — C8 is untouched. Only the gating between groups changes.
+
+**Consequence.** Corrections arrive in one large batch instead of several small
+ones, and some defects will mask others. Accepted deliberately. Everything
+written before the first real exercise is a draft by definition, and calling any
+of it usable before that point is the reporting error C8 names.
+
+**Consequence.** A group with no consumer is not built at all. G3
+(`stack-react-native`, Mobile agent) and G5 (`auth-lib`, `logging-lib`) stay
+empty: no project needs them, so they could only be written speculatively and
+would never be corrected.
 
 Status: locked, 2026-07-29.
 
