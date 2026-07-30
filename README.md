@@ -88,6 +88,11 @@ into a project and diverge there.
 Skills are directories, so they install as **junctions**, which need neither
 administrator rights nor Developer Mode.
 
+Do not use `setup.sh` from Git Bash here. Without the Windows symlink privilege
+`ln -s` copies the source instead of linking it and reports success, leaving
+copies that never track the repository. `setup.sh` detects this and refuses
+rather than installing them.
+
 Agents are single `.md` files, and only a symbolic link can stand in for a file
 — which does require a privilege Windows withholds by default. Agent files are
 therefore reported as `BLOCKED` until you either enable Developer Mode

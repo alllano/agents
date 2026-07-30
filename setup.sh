@@ -95,6 +95,21 @@ make_link() {
 	if [ "$DRY_RUN" -eq 0 ]; then
 		mkdir -p -- "$(dirname -- "$2")"
 		ln -s -- "$1" "$2"
+
+		# Git Bash without the Windows symlink privilege makes ln -s copy the
+		# source instead of linking it, and says nothing: the install reports
+		# CREATED, exits 0, and the copy never tracks the repository again. That
+		# is the invisible staleness C5 rejects, so fail loudly instead. On a
+		# real POSIX system this check never fires.
+		if [ ! -L "$2" ]; then
+			# Safe to remove: it was created a moment ago and is not a link.
+			rm -rf -- "$2"
+			printf '\nsetup.sh: ln -s produced a copy, not a link:\n  %s\n' "$2" >&2
+			printf 'This shell cannot create symbolic links, so nothing was installed.\n' >&2
+			printf 'On Windows run setup.ps1 instead. To use this script anyway, enable\n' >&2
+			printf 'Developer Mode and export MSYS=winsymlinks:nativestrict.\n' >&2
+			exit 1
+		fi
 	fi
 }
 
@@ -228,7 +243,7 @@ else
 	walk_skills install_one
 	walk_agents install_one
 	if [ "$total" -eq 0 ]; then
-		printf 'no artifacts found yet — nothing to link\n'
+		printf 'no artifacts found yet - nothing to link\n'
 		exit 0
 	fi
 	printf '\n%d of %d linked, %d skipped\n' "$linked" "$total" "$skipped"
