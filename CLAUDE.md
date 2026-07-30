@@ -3,9 +3,9 @@
 Instructions for Claude Code when working **inside this repository**.
 
 This repo is the source of truth for a reusable set of agents and skills used
-across personal software projects. `setup.sh` symlinks `agents/` and `skills/`
-into `~/.claude/`, so anything committed here takes effect globally, in every
-project, immediately. Treat every edit as a production change.
+across personal software projects. `setup.sh` and `setup.ps1` link each agent and
+each skill into `~/.claude/`, so anything committed here takes effect globally,
+in every project, immediately. Treat every edit as a production change.
 
 ## What this repo is not
 
@@ -25,6 +25,8 @@ project, immediately. Treat every edit as a production change.
 | `skills/<name>/SKILL.md` | One folder per skill | Folder name **is** the skill name |
 | `templates/` | Per-project starter files | Copied into projects, never symlinked |
 | `docs/conventions.md` | Locked architectural decisions | Read before changing structure |
+| `setup.sh`, `setup.ps1` | Installers, one per platform | Change both or neither |
+| `.gitattributes` | Line endings per file type | `*.sh` must stay `eol=lf` |
 | `README.md` | Human-facing setup and overview | Not agent instructions |
 
 Partition is by **artifact type**, not by agent. Claude Code does not resolve

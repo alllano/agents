@@ -3,13 +3,13 @@
 A reusable set of [Claude Code](https://docs.claude.com/en/docs/claude-code)
 agents and skills, shared across personal software projects.
 
-This repository is the single source of truth for those artifacts. `setup.sh`
-symlinks `agents/` and `skills/` into `~/.claude/`, so anything committed here
+This repository is the single source of truth for those artifacts. The installer
+links each skill and each agent into `~/.claude/`, so anything committed here
 takes effect globally — in every project, immediately.
 
-> **Status: scaffolding.** The conventions are settled (see
-> [CLAUDE.md](CLAUDE.md)); the artifacts are not written yet. The first group of
-> the build order below is the current work.
+> **Status: no artifacts yet.** The conventions are settled (see
+> [CLAUDE.md](CLAUDE.md)) and the installer works, but no skill or agent has
+> been written. G1 of the build order below is the current work.
 
 ## Why
 
@@ -37,7 +37,8 @@ skills by agent folder, so grouping them that way breaks discovery.
 | `agents/` | One loose `.md` per agent. Flat, no subfolders. |
 | `skills/<name>/SKILL.md` | One folder per skill. The folder name **is** the skill name. |
 | `templates/` | Per-project starter files. Copied into projects, never symlinked. |
-| `docs/conventions.md` | Locked architectural decisions. |
+| `docs/conventions.md` | Locked architectural decisions, and why they are what they are. |
+| `setup.sh`, `setup.ps1` | Installers for POSIX and Windows. Same contract. |
 | `CLAUDE.md` | Instructions for Claude Code when working inside this repo. |
 
 ## Install
@@ -45,12 +46,54 @@ skills by agent folder, so grouping them that way breaks discovery.
 ```sh
 git clone https://github.com/alllano/agents.git
 cd agents
+./setup.sh --dry-run   # see what it would do
 ./setup.sh
 ```
 
-`setup.sh` creates symlinks in `~/.claude/`; it does not copy. Pulling new
-commits updates every project at once. Nothing here needs a build step, and
-there is no test suite — this repo contains no application code.
+On Windows, use the PowerShell installer instead:
+
+```powershell
+.\setup.ps1 -DryRun
+.\setup.ps1
+```
+
+Both link **each artifact individually** — one link per skill directory, one per
+agent file — rather than linking `skills/` and `agents/` whole. Those two are
+namespaces owned by Claude Code and shared with anything else you install there,
+and replacing one with a link would mean destroying its contents first.
+
+The consequence worth knowing: editing an artifact needs no action, but a
+`git pull` that **adds** one requires re-running the installer. Same after
+moving or re-cloning the repository, since links store absolute paths.
+
+Nothing here needs a build step, and there is no test suite — this repo contains
+no application code.
+
+### Options
+
+| Flag | Effect |
+|---|---|
+| `--dry-run` / `-DryRun` | Print the plan. Creates nothing. |
+| `--force` / `-Force` | Replace links pointing elsewhere; move real content in the way into a timestamped backup first. Never deletes. |
+| `--uninstall` / `-Uninstall` | Remove only the links that resolve into this repository. |
+
+Exit code `0` means clean, `2` means it finished but skipped something — so a
+partial install is detectable without reading the output.
+
+`templates/` is deliberately never linked. Those files are meant to be copied
+into a project and diverge there.
+
+### Windows notes
+
+Skills are directories, so they install as **junctions**, which need neither
+administrator rights nor Developer Mode.
+
+Agents are single `.md` files, and only a symbolic link can stand in for a file
+— which does require a privilege Windows withholds by default. Agent files are
+therefore reported as `BLOCKED` until you either enable Developer Mode
+(Settings → System → For developers) or run the installer from an elevated
+shell. `-AllowCopyFallback` copies them instead, at the cost of having to re-run
+with `-Force` after every pull.
 
 ## Scope
 
