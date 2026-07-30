@@ -1,9 +1,14 @@
 # Project context
 
 <!--
-Copy this file to the root of a project as `context.md`, fill it in, and delete
+Copy this file to the root of a project as `CLAUDE.md`, fill it in, and delete
 the sections that do not apply. While it still contains TODO markers it is a
 stub, not a usable context file.
+
+The name matters. Claude Code auto-loads CLAUDE.md and passes it to every custom
+subagent; a file under any other name is inert unless something reads it
+explicitly. This copy keeps the .template suffix so that it is not itself loaded
+as instructions while it sits in the agents repository.
 
 Write it in English. No secrets, no credentials, and no literal LLM prompts —
 only a summary of what a prompt does, what it receives, and what it returns.

@@ -151,7 +151,8 @@ a correct starting point is.
 **Consequence.** Improvements to a template do not reach projects already
 started from it. That is accepted — retrofitting is a per-project decision.
 
-Status: locked, 2026-07-29.
+Status: locked, 2026-07-29. Amended by C11: template files carry a `.template`
+suffix, and the project context template becomes `CLAUDE.md` when copied.
 
 ---
 
@@ -159,7 +160,7 @@ Status: locked, 2026-07-29.
 
 **Decision.** A project never defines a skill under the same name as a global
 one. Project-specific deviations go in the overrides section of that project's
-`context.md`.
+own `CLAUDE.md`.
 
 **Why.** Resolution order — enterprise, then personal, then project — makes the
 global version win, so the local file looks authoritative while having no
@@ -172,7 +173,8 @@ The resolution order here does not support it.
 **Consequence.** Overrides are declarative, in prose, in one known place per
 project, and they say what global rule they are contradicting and why.
 
-Status: locked, 2026-07-29.
+Status: locked, 2026-07-29. Amended by C11: that place is the project's
+`CLAUDE.md`, not a file of another name.
 
 ---
 
@@ -229,6 +231,39 @@ discussed. It narrows who can use the repository for no gain.
 
 **Consequence.** A commit whose files are in Spanish is a defect, and the
 conversation that produced it is not.
+
+Status: locked, 2026-07-29.
+
+---
+
+## C11 — Project context lives in the project's CLAUDE.md
+
+**Decision.** The per-project context file is named `CLAUDE.md` and sits in the
+project root. The template ships as `templates/CLAUDE.md.template`. Amends C6 and
+C7, which referred to it as `context.md`.
+
+**Why.** Claude Code auto-loads only `CLAUDE.md` and `CLAUDE.local.md` — from the
+project root, from parent directories, and from subdirectories — and passes that
+hierarchy to every custom subagent. A file under any other name is inert: it
+reaches the model only if something reads it explicitly. The original convention
+invented a parallel name and then had no mechanism to load it, so a carefully
+written project context did nothing at all.
+
+**Rejected.** Keeping `context.md` and bridging it with a one-line `CLAUDE.md`
+containing `@context.md`. The import syntax does work, relative to the importing
+file and up to four hops. But it is two files where one suffices, in every
+project, plus a level of indirection to explain. The platform already has a
+standard file for exactly this purpose.
+
+**Rejected.** Naming the template file `CLAUDE.md`. Subdirectory `CLAUDE.md`
+files are loaded too, so a template full of TODO markers sitting in
+`templates/` would become live instructions while working in this repository.
+The `.template` suffix keeps it inert.
+
+**Consequence.** Agents no longer need an instruction to read the project
+context; they receive it. The built-in Explore and Plan agents are the exception
+— they skip the CLAUDE.md hierarchy by design, so work that depends on project
+context should not be delegated to them.
 
 Status: locked, 2026-07-29.
 

@@ -11,8 +11,8 @@ in every project, immediately. Treat every edit as a production change.
 
 - Not a project codebase. There is no application to run and no test suite to
   pass. Do not look for build commands.
-- Not a place for project-specific rules. Those live in each project's
-  `context.md`.
+- Not a place for project-specific rules. Those live in each project's own
+  `CLAUDE.md`.
 - Not a place for secrets. Never commit keys, credentials, or literal LLM
   prompts — only a summary of what a prompt does, what it receives, and what it
   returns.
@@ -23,7 +23,7 @@ in every project, immediately. Treat every edit as a production change.
 |---|---|---|
 | `agents/` | One loose `.md` per agent | Flat; no subfolders |
 | `skills/<name>/SKILL.md` | One folder per skill | Folder name **is** the skill name |
-| `templates/` | Per-project starter files | Copied into projects, never symlinked |
+| `templates/` | Per-project starter files, `.template` suffixed | Copied into projects, never symlinked |
 | `docs/conventions.md` | Locked architectural decisions | Read before changing structure |
 | `setup.sh`, `setup.ps1` | Installers, one per platform | Change both or neither |
 | `.gitattributes` | Line endings per file type | `*.sh` must stay `eol=lf` |
@@ -97,9 +97,8 @@ Never shadow a global skill with a local one of the same name. Resolution order
 (enterprise > personal > project) makes the global version win, and subagents
 invoked via Task have been reported to ignore the local version entirely.
 
-Project-specific deviations go in the overrides section of that project's
-`context.md`, which takes precedence over the general rule when the two
-conflict.
+Project-specific deviations go in the overrides section of that project's own
+`CLAUDE.md`, which takes precedence over the general rule when the two conflict.
 
 ## Language
 

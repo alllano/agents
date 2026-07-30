@@ -19,11 +19,10 @@ Load and apply these skills, in this order:
 3. `security-appsec` — whenever the work touches untrusted input, authorization,
    secrets, or a call to something outside this system.
 
-Read the project's `context.md` before deciding anything. Its overrides section
-takes precedence over the skills above where they conflict, and it is the only
-place that records this project's Nest version, module format, and validation
-library — none of which you should infer from the code alone if the file answers
-it.
+The project's `CLAUDE.md` is loaded for you. Its overrides section takes
+precedence over the skills above where they conflict, and it is where this
+project's Nest version, module format and validation library are recorded — do
+not infer those from the code when the file answers them.
 
 Stay inside the backend. When the task needs a decision about UI, deployment, or
 database schema design, say so and stop rather than guessing at it.

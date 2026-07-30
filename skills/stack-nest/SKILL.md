@@ -21,12 +21,12 @@ a module per domain feature, controller into service, dependency injection as
 the default way things find each other. It is what most Nest code in the world
 looks like, which makes it the cheapest thing to read and to hand over. A
 project that genuinely needs hexagonal layering or CQRS adds that on top and
-says so in its `context.md`; it is not assumed here.
+says so in its `CLAUDE.md`; it is not assumed here.
 
 Generate new projects as **ESM**. Nest 12 moves every official package to ESM,
 and starting a new project in CommonJS today is signing up for a migration
 later. An existing CommonJS project stays CommonJS — that is a fact about the
-project, recorded in its `context.md`, not something to change opportunistically.
+project, recorded in its `CLAUDE.md`, not something to change opportunistically.
 
 ## Modules are the unit of encapsulation
 
@@ -80,7 +80,7 @@ project, recorded in its `context.md`, not something to change opportunistically
   domain types rather than strings that happen to look right.
 - The validation library is the project's choice — `class-validator`, or a
   Standard Schema library like Zod through the `schema` option in Nest 12. The
-  boundary is not a choice. Record the project's pick in its `context.md` and
+  boundary is not a choice. Record the project's pick in its `CLAUDE.md` and
   do not mix two in one codebase.
 
 ## Use the primitive that matches the concern
@@ -120,7 +120,7 @@ Deliberate exclusions, with their owner. Do not add them here.
 | Test design, coverage judgment | `testing` (G4) |
 | Authentication and authorization design | `security-appsec` |
 | Language-agnostic judgment | `base` |
-| Nest version, module format, test runner, linter, builder | the project's `context.md` — facts, not judgment |
+| Nest version, module format, test runner, linter, builder | the project's `CLAUDE.md` — facts, not judgment |
 
 Microservices, GraphQL, WebSockets, and queues are absent because no real task
 has justified them yet.

@@ -111,7 +111,7 @@ after every pull.
 ## Scope
 
 Global artifacts hold rules that are true across projects. Project-specific
-rules belong in that project's own `context.md`, which takes precedence where
+rules belong in that project's own `CLAUDE.md`, which takes precedence where
 the two conflict. A local skill must never reuse the name of a global one:
 resolution order makes the global version win, and subagents have been reported
 to ignore the local version entirely.
