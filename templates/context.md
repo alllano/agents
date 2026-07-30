@@ -1,0 +1,73 @@
+# Project context
+
+<!--
+Copy this file to the root of a project as `context.md`, fill it in, and delete
+the sections that do not apply. While it still contains TODO markers it is a
+stub, not a usable context file.
+
+Write it in English. No secrets, no credentials, and no literal LLM prompts —
+only a summary of what a prompt does, what it receives, and what it returns.
+
+Keep it short. This file is read alongside every task in this project, so
+everything in it competes for attention with the task itself. If a rule here is
+true in every project, it belongs in a global skill instead.
+-->
+
+## What this project is
+
+TODO — one paragraph: what it does, who uses it, and what stage it is at
+(prototype, in production, being retired). Enough that someone can tell whether
+a proposed change is reasonable.
+
+## Stack
+
+TODO — languages, frameworks, and versions where the version actually changes
+the answer.
+
+Global skills that apply here: `base`, TODO — the relevant `stack-*` skills.
+
+## Architecture and boundaries
+
+TODO — the main modules and which direction dependencies run between them. Name
+the boundaries that must not be crossed and what enforces them.
+
+## Domain vocabulary
+
+TODO — terms that mean something specific here and are easy to misread. Only the
+ones that have already caused a misunderstanding; a glossary of obvious words is
+noise.
+
+## Commands
+
+TODO — how to install, run, test, and lint. These are facts, not rules: they
+cannot be inferred from the code and getting them wrong wastes a whole attempt.
+
+| Purpose | Command |
+|---|---|
+| Install | TODO |
+| Run | TODO |
+| Test | TODO |
+| Lint | TODO |
+
+## Local conventions
+
+TODO — rules that hold in this project and are **not** true generally. Each one
+should be something a reasonable person would otherwise get wrong.
+
+## Overrides
+
+Rules in this section take precedence over the global skills where the two
+conflict.
+
+TODO — leave empty if there are none. An empty overrides section is a good sign;
+a long one means either the project is unusual or a global rule is wrong and
+should be fixed globally instead.
+
+| Global rule | What this project does instead | Why |
+|---|---|---|
+| TODO | TODO | TODO |
+
+## Out of scope
+
+TODO — generated output, vendored code, and areas not to touch, with the reason.
+"Do not edit" without a reason invites someone to edit it anyway.
