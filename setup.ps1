@@ -145,8 +145,23 @@ function Remove-Link([string]$Path) {
 	}
 }
 
+# Create a file symbolic link, via cmd's mklink rather than New-Item.
+#
+# New-Item -ItemType SymbolicLink in Windows PowerShell 5.1 does not pass
+# SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE, so it demands administrator even
+# when Developer Mode is enabled. mklink does pass it. Verified on Windows 11
+# with Developer Mode on and no elevation: New-Item fails with "administrator
+# privileges are required", mklink succeeds. PowerShell 7 does not have this
+# problem, but this script supports 5.1.
+function New-FileSymlink([string]$Link, [string]$Target) {
+	$output = & cmd.exe /c mklink "$Link" "$Target"
+	if ($LASTEXITCODE -ne 0) {
+		throw "mklink could not create '$Link': $output"
+	}
+}
+
 # One probe, cached: attempt a real symbolic link in the temp directory and see
-# whether the privilege is held.
+# whether this session can create one at all.
 $script:SymlinkOk = $null
 function Test-SymlinkCapability {
 	if ($null -ne $script:SymlinkOk) { return $script:SymlinkOk }
@@ -155,7 +170,7 @@ function Test-SymlinkCapability {
 	$link = Join-Path $env:TEMP "claude-probe-link-$id"
 	try {
 		Set-Content -LiteralPath $target -Value 'probe' -Encoding utf8
-		New-Item -ItemType SymbolicLink -Path $link -Target $target -ErrorAction Stop | Out-Null
+		New-FileSymlink $link $target
 		$script:SymlinkOk = $true
 	} catch {
 		$script:SymlinkOk = $false
@@ -175,7 +190,7 @@ function New-ArtifactLink([string]$Kind, [string]$Source, [string]$Dest) {
 	if ($Kind -eq 'skill') {
 		New-Item -ItemType Junction -Path $Dest -Target $Source | Out-Null
 	} elseif (Test-SymlinkCapability) {
-		New-Item -ItemType SymbolicLink -Path $Dest -Target $Source | Out-Null
+		New-FileSymlink $Dest $Source
 	} else {
 		Copy-Item -LiteralPath $Source -Destination $Dest -Force
 	}
@@ -330,9 +345,10 @@ if ($Uninstall) {
 	if ($script:MadeBackup) { Write-Host "existing content was moved to $BackupDir" }
 	if ($script:BlockedAgents -gt 0) {
 		Write-Host ''
-		Write-Host "$script:BlockedAgents agent file(s) could not be linked: creating a symbolic"
-		Write-Host 'link to a file requires a privilege this session does not hold. Pick one:'
-		Write-Host '  - enable Developer Mode: Settings > System > For developers'
+		Write-Host "$script:BlockedAgents agent file(s) could not be linked: this session cannot"
+		Write-Host 'create a symbolic link to a file. Pick one:'
+		Write-Host '  - enable Developer Mode: Settings > System > For developers. It applies to'
+		Write-Host '    the next run, with no need to reopen the terminal or elevate'
 		Write-Host '  - or re-run this script from an elevated PowerShell'
 		Write-Host '  - or pass -AllowCopyFallback to copy them instead. Copies do not track'
 		Write-Host '    git pull; re-run with -Force after every pull to refresh them.'

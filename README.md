@@ -94,11 +94,19 @@ copies that never track the repository. `setup.sh` detects this and refuses
 rather than installing them.
 
 Agents are single `.md` files, and only a symbolic link can stand in for a file
-— which does require a privilege Windows withholds by default. Agent files are
-therefore reported as `BLOCKED` until you either enable Developer Mode
-(Settings → System → For developers) or run the installer from an elevated
-shell. `-AllowCopyFallback` copies them instead, at the cost of having to re-run
-with `-Force` after every pull.
+— which does require a privilege Windows withholds by default. Enable **Developer
+Mode** (Settings → System → For developers) and agents link without elevation and
+without reopening the terminal.
+
+Note for anyone editing `setup.ps1`: it creates file symbolic links with `mklink`
+rather than `New-Item -ItemType SymbolicLink`, because Windows PowerShell 5.1's
+`New-Item` does not pass `SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE` and so
+still demands administrator even with Developer Mode on. Do not "simplify" it
+back.
+
+Where symbolic links are genuinely unavailable, agents are reported `BLOCKED`.
+`-AllowCopyFallback` copies them instead, at the cost of re-running with `-Force`
+after every pull.
 
 ## Scope
 
