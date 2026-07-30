@@ -7,7 +7,7 @@ description: Apply when writing or changing code in any language. Judgment on
 
 # base
 
-> Status: draft — complete content, not yet exercised on a real task.
+> Status: usable — exercised on the setup.sh / setup.ps1 parity review.
 
 ## When this applies
 
