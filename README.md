@@ -7,9 +7,10 @@ This repository is the single source of truth for those artifacts. The installer
 links each skill and each agent into `~/.claude/`, so anything committed here
 takes effect globally — in every project, immediately.
 
-> **Status: no artifacts yet.** The conventions are settled (see
-> [CLAUDE.md](CLAUDE.md)) and the installer works, but no skill or agent has
-> been written. G1 of the build order below is the current work.
+> **Status: written, not yet proven.** Nine skills and six agents exist and
+> install. All but one are **drafts** — complete content that has not yet been
+> exercised on a real project. Treat them as a considered starting point, not as
+> tested guidance.
 
 ## Why
 
@@ -132,21 +133,46 @@ Anything short of (3) is a draft and is labeled as such. In short: a **stub**
 still contains TODO markers, a **draft** has complete content but no record of
 being exercised, and **usable** has been run against a real task.
 
-## Build order
+## What is here
 
-Groups advance in sequence. No group starts until the previous group's output
-has been exercised on a real project — minimum viable content, exercised, then
-iterated, rather than designed to theoretical completeness up front.
+Skills:
 
-| Group | Output |
-|---|---|
-| G1 | `base` → `stack-nest` → `security-appsec` → Backend agent |
-| G2 | `stack-react` → `stack-react-web` → Frontend agent |
-| G3 | `stack-react-native` → Mobile agent |
-| G4 | `error-handling-and-logging` → `testing` |
-| G5 | `auth-lib` and `logging-lib` skills, once those libraries exist |
-| G6 | Testing agent → Infra agent → Code Reviewer agent |
-| G7 | Requirements Analyst (independent; no ordering constraint) |
+| Skill | Covers | State |
+|---|---|---|
+| `base` | Language-agnostic judgment. Loaded for every code task. | usable |
+| `stack-nest` | NestJS: module boundaries, layers, injection, validation at the edge. | draft |
+| `stack-react` | React on any platform: components, state, effects, hooks. | draft |
+| `stack-react-web` | The browser: DOM and accessibility, the URL, storage, bundle cost. | draft |
+| `stack-prisma` | Schema as source of truth, migration safety, the repository boundary. | draft |
+| `stack-aws` | Permissions, config delivery, compute choice, cost as a design output. | draft |
+| `security-appsec` | Trust boundaries, authorization placement, secrets, failing closed. | draft |
+| `error-handling-and-logging` | Which outcomes are errors, what an error carries, what to log. | draft |
+| `testing` | What to assert, how much to arrange, where to mock. | draft |
+
+Agents:
+
+| Agent | Role | Notable |
+|---|---|---|
+| `backend` | Server-side implementation and review. | |
+| `frontend` | Browser front-end implementation and review. | |
+| `tester` | Writes and reviews tests. | Will not change production code to make a test pass. |
+| `infra` | Deployment, CI, cloud configuration. | Proposes changes; does not apply them to live systems. |
+| `code-reviewer` | Reviews a change and reports findings. | **Read-only by design** — no `Edit`, no `Write`. |
+| `requirements-analyst` | Turns a request into something buildable. | Does not design the solution. |
+
+Every skill ends with a table of what it deliberately leaves out and who owns
+that topic instead, so a gap is visible rather than implied.
+
+### Not built, on purpose
+
+- **React Native and a Mobile agent** — no project needs them, so they could only
+  be written speculatively and would never be corrected.
+- **`auth-lib` and `logging-lib`** — the libraries they would document do not
+  exist yet.
+
+An artifact with no consumer cannot be exercised, and by this repo's own
+definition of done that makes it permanently a draft. Better absent than
+pretending.
 
 ## Contributing
 
