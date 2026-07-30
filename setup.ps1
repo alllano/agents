@@ -32,9 +32,13 @@ When symbolic links are unavailable, copy agent files instead of skipping them.
 Copies do not track git pull and must be refreshed with -Force after each one.
 
 .NOTES
+The config directory is $env:CLAUDE_CONFIG_DIR, or ~/.claude when it is unset.
+
 templates/ is deliberately never linked: those files are meant to be copied into
 a project and diverge there.
 
+Statuses: CREATED, OK, RELINKED, REPAIRED, BACKED-UP, CONFLICT, OCCUPIED,
+          INVALID, BLOCKED, REMOVED.
 Exit codes: 0 clean, 1 error, 2 finished with items skipped.
 #>
 [CmdletBinding()]
@@ -101,6 +105,27 @@ function Get-LinkTarget([string]$Path) {
 function Test-IsLink([string]$Path) {
 	$item = Get-Item -LiteralPath $Path -Force
 	return [bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)
+}
+
+# Is there anything at this path, link or not, without following it? Test-Path
+# answers for the target of a file symbolic link, so it reports $false for a
+# dangling agent link -- which does exist, and is the one case that has to be
+# repaired. Enumerating the parent sees the directory entry either way. This is
+# the counterpart of `[ -L ] || [ -e ]` in setup.sh.
+function Test-EntryExists([string]$Path) {
+	if (Test-Path -LiteralPath $Path) { return $true }
+	$parent = Split-Path -Parent $Path
+	if (-not (Test-Path -LiteralPath $parent -PathType Container)) { return $false }
+	$leaf = Split-Path -Leaf $Path
+	return [bool](Get-ChildItem -LiteralPath $parent -Force | Where-Object { $_.Name -eq $leaf })
+}
+
+# Where a link target points, as an absolute path. A relative target is relative
+# to the directory holding the link, not to the caller's working directory.
+function Resolve-LinkTarget([string]$Target, [string]$LinkPath) {
+	if ([string]::IsNullOrEmpty($Target)) { return '' }
+	if ([IO.Path]::IsPathRooted($Target)) { return $Target }
+	return (Join-Path (Split-Path -Parent $LinkPath) $Target)
 }
 
 # Remove-Item -Recurse is banned in this script. Against a reparse point it has
@@ -183,11 +208,12 @@ function Install-Artifact([string]$Kind, [string]$Name, [string]$Source, [string
 		return
 	}
 
-	if (Test-Path -LiteralPath $Dest) {
+	if (Test-EntryExists $Dest) {
 		if (Test-IsLink $Dest) {
 			$target = Get-LinkTarget $Dest
+			$resolved = Resolve-LinkTarget $target $Dest
 			$resolves = $false
-			if (-not [string]::IsNullOrEmpty($target)) { $resolves = Test-Path -LiteralPath $target }
+			if (-not [string]::IsNullOrEmpty($resolved)) { $resolves = Test-Path -LiteralPath $resolved }
 
 			if (-not $resolves) {
 				Write-Status 'REPAIRED' $Kind "$Name (link was dangling)"
@@ -207,7 +233,7 @@ function Install-Artifact([string]$Kind, [string]$Name, [string]$Source, [string
 				$script:Skipped++
 			}
 		} elseif ($Force) {
-			Write-Status 'BACKED-UP' $Kind "$Name (moved to $(Split-Path -Leaf $BackupDir))"
+			Write-Status 'BACKED-UP' $Kind "$Name (moved to $(Split-Path -Leaf $BackupDir)\)"
 			Move-Aside $Dest
 			New-ArtifactLink $Kind $Source $Dest
 			$script:Linked++
@@ -225,7 +251,7 @@ function Install-Artifact([string]$Kind, [string]$Name, [string]$Source, [string
 # Remove Dest only when it is a link into this repository. Anything else is the
 # user's, and stays.
 function Uninstall-Artifact([string]$Kind, [string]$Name, [string]$Source, [string]$Dest) {
-	if (-not (Test-Path -LiteralPath $Dest)) { return }
+	if (-not (Test-EntryExists $Dest)) { return }
 
 	if (Test-IsLink $Dest) {
 		$target = Get-LinkTarget $Dest
@@ -261,7 +287,7 @@ function Invoke-OverAgents([string]$Action) {
 }
 
 foreach ($required in @((Join-Path $RepoRoot 'skills'), (Join-Path $RepoRoot 'agents'))) {
-	if (-not (Test-Path -LiteralPath $required)) {
+	if (-not (Test-Path -LiteralPath $required -PathType Container)) {
 		Write-Error "expected directory is missing: $required"
 		exit 1
 	}
